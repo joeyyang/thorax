@@ -1,4 +1,9 @@
-/*global cloneInheritVars, createInheritVars, resetInheritVars, createRegistryWrapper, getValue, inheritVars, createErrorMessage, assignTemplate */
+/*global $serverSide, cloneInheritVars, createInheritVars, resetInheritVars, createRegistryWrapper, getValue, inheritVars, createErrorMessage, assignTemplate */
+
+// Provide default behavior for client-failover
+if (typeof $serverSide === 'undefined') {
+  window.$serverSide = false;
+}
 
 //support zepto.forEach on jQuery
 if (!$.fn.forEach) {
