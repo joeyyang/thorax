@@ -1,13 +1,11 @@
 describe('serverSide', function() {
   var emit;
-  before(function() {
-    window.$serverSide = true;
-  });
-  after(function() {
-    window.$serverSide = false;
-  });
   beforeEach(function() {
+    window.$serverSide = true;
     window.emit = emit = this.spy();
+  });
+  afterEach(function() {
+    window.$serverSide = false;
   });
 
   describe('emit', function() {
@@ -19,15 +17,18 @@ describe('serverSide', function() {
       expect(emit).to.have.been.calledOnce;
     });
     it('should defer emit for server-side views', function() {
-      var view = new Thorax.View(),
+      var view = new Thorax.View({template: function() { return 'bar'; }}),
           layout = new Thorax.LayoutView();
 
       layout.setView(view, {serverRender: true});
-      expect(emit).to.not.have.been.calledOnce;
+      expect(emit).to.not.have.been.called;
 
-      view.serverRender = true;
+      view = new Thorax.View({
+        serverRender: true,
+        template: function() { return 'bar'; }
+      });
       layout.setView(view);
-      expect(emit).to.not.have.been.calledOnce;
+      expect(emit).to.not.have.been.called;
     });
     it('should emit after timeout');
   });
