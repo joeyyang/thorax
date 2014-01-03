@@ -1,7 +1,34 @@
 describe('serverSide', function() {
+  var emit;
+  before(function() {
+    window.$serverSide = true;
+  });
+  after(function() {
+    window.$serverSide = false;
+  });
+  beforeEach(function() {
+    window.emit = emit = this.spy();
+  });
+
   describe('emit', function() {
-    it('should emit on setView for non-server views');
-    it('should cancel execution after emit');
+    it('should emit on setView for non-server views', function() {
+      var view = new Thorax.View(),
+          layout = new Thorax.LayoutView();
+
+      layout.setView(view);
+      expect(emit).to.have.been.calledOnce;
+    });
+    it('should defer emit for server-side views', function() {
+      var view = new Thorax.View(),
+          layout = new Thorax.LayoutView();
+
+      layout.setView(view, {serverRender: true});
+      expect(emit).to.not.have.been.calledOnce;
+
+      view.serverRender = true;
+      layout.setView(view);
+      expect(emit).to.not.have.been.calledOnce;
+    });
     it('should emit after timeout');
   });
 

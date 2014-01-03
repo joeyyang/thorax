@@ -18,6 +18,12 @@ Thorax.LayoutView = Thorax.View.extend({
     options = _.extend({
       scroll: true
     }, options || {});
+
+    // Emit only data for non-server rendered views
+    if ($serverSide && !options.serverRender && !view.serverRender) {
+      return emit();
+    }
+
     if (_.isString(view)) {
       view = new (Thorax.Util.registryGet(Thorax, 'Views', view, false))();
     }
