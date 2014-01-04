@@ -34,7 +34,20 @@ describe('serverSide', function() {
   });
 
   describe('events', function() {
-    it('should NOP events in server mode');
+    it('should NOP DOM events in server mode', function() {
+      var spy = this.spy();
+      var view = new Thorax.View({
+        events: {
+          click: spy
+        },
+        template: function() {
+          return 'foo';
+        }
+      });
+
+      view.$el.trigger('click');
+      expect(spy).to.not.have.been.called;
+    });
     it('should NOP loading in server mode');
   });
 

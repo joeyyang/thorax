@@ -1,4 +1,4 @@
-/*global createInheritVars, inheritVars, listenTo, objectEvents, walkInheritTree */
+/*global $serverSide, createInheritVars, inheritVars, listenTo, objectEvents, walkInheritTree */
 // Save a copy of the _on method to call as a $super method
 var _on = Thorax.View.prototype.on;
 
@@ -107,7 +107,8 @@ _.extend(Thorax.View.prototype, {
       } else {
         _on.call(this, params.name, boundHandler, params.context || this);
       }
-    } else {
+    } else if (!$serverSide) {
+      // DOM Events
       if (!params.nested) {
         boundHandler = containHandlerToCurentView(boundHandler, this.cid);
       }
