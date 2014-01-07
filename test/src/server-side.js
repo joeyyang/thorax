@@ -224,7 +224,7 @@ describe('serverSide', function() {
           view = new View();
           restoreView();
 
-          compareViews(view, server);
+          compareViews();
           expect(_.keys(view.children).length).to.equal(1);
           expect(_.values(view.children)[0].$el.html()).to.equal('something');
           expect(view._renderCount).to.equal(2);
@@ -237,7 +237,7 @@ describe('serverSide', function() {
           view = new SomethingElse();
           restoreView();
 
-          compareViews(view, server);
+          compareViews();
           expect(_.keys(view.children).length).to.equal(1);
           expect(_.values(view.children)[0]).to.be.instanceof(Thorax.Views.registry);
         });
@@ -288,7 +288,7 @@ describe('serverSide', function() {
           });
           restoreView();
 
-          compareViews(view, server);
+          compareViews();
           expect(_.keys(view.children).length).to.equal(1);
         });
       });
@@ -305,7 +305,7 @@ describe('serverSide', function() {
         });
         restoreView();
 
-        compareViews(view, server);
+        compareViews();
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.child);
       });
@@ -326,7 +326,7 @@ describe('serverSide', function() {
         });
         restoreView();
 
-        compareViews(view, server);
+        compareViews();
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.parent.child);
       });
@@ -352,7 +352,7 @@ describe('serverSide', function() {
         });
         restoreView();
 
-        compareViews(view, server);
+        compareViews();
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(child);
       });
@@ -373,7 +373,7 @@ describe('serverSide', function() {
         });
         restoreView();
 
-        compareViews(view, server);
+        compareViews();
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.parent.child);
       });
