@@ -5,6 +5,10 @@ if (typeof $serverSide === 'undefined') {
   window.$serverSide = false;
 }
 
+if (typeof nextTick === 'undefined') {
+  window.nextTick = window.setImmediate || window.setTimeout;
+}
+
 //support zepto.forEach on jQuery
 if (!$.fn.forEach) {
   $.fn.forEach = function(iterator, context) {
