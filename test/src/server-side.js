@@ -246,7 +246,7 @@ describe('serverSide', function() {
         });
         it('should include view args when instantiating view', function() {
           server = new Thorax.View({
-            template: Handlebars.compile('{{view "registry" key=4}}')
+            template: Handlebars.compile('{{view "registry" key=4}}', {trackIds: true})
           });
           view = new SomethingElse();
           restoreView();
@@ -258,7 +258,7 @@ describe('serverSide', function() {
             foo: {
               yes: false
             },
-            template: Handlebars.compile('{{view "registry" key=4 bar=foo}}')
+            template: Handlebars.compile('{{view "registry" key=4 bar=foo}}', {trackIds: true})
           });
           view = new SomethingElse({
             foo: {
