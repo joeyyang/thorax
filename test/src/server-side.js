@@ -81,6 +81,9 @@ describe('serverSide', function() {
       view.$('[data-view-cid]').each(function() {
         $(this).removeAttr('data-view-cid');
       });
+      view.$('[data-view-server]').each(function() {
+        $(this).removeAttr('data-view-server');
+      });
     }
     function restoreView() {
       server.render();
