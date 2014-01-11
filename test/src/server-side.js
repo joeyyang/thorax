@@ -48,7 +48,17 @@ describe('serverSide', function() {
       view.$el.trigger('click');
       expect(spy).to.not.have.been.called;
     });
-    it('should NOP loading in server mode');
+    it('should NOP loading in server mode', function() {
+      var start = this.spy(),
+          end = this.spy(),
+          context = {};
+
+      var handler = Thorax.loadHandler(start, end, context);
+      handler();
+      this.clock.tick(2000);
+      expect(start).to.not.have.been.called;
+      expect(end).to.not.have.been.called;
+    });
   });
 
   describe('rendering', function() {
