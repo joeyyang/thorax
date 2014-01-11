@@ -27,7 +27,19 @@ Thorax.LayoutView = Thorax.View.extend({
     if (_.isString(view)) {
       view = new (Thorax.Util.registryGet(Thorax, 'Views', view, false))();
     }
+
+    if (!$serverSide && !this.hasBeenSet) {
+      var existing = this.$('[' + viewNameAttributeName + '="' + view.name + '"]')[0],
+          used;
+      if (existing) {
+        used = view.restore(existing);
+      }
+      if (!used) {
+        getLayoutViewsTargetElement.call(this).innerHTML = '';
+      }
+    }
     this.ensureRendered();
+
     var oldView = this._view, append, remove, complete;
     if (view === oldView) {
       return false;
@@ -57,6 +69,7 @@ Thorax.LayoutView = Thorax.View.extend({
     }, this);
 
     complete = _.bind(function() {
+      this.hasBeenSet = true;
       this.trigger('change:view:end', view, oldView, options);
     }, this);
 

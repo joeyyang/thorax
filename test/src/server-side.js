@@ -112,9 +112,17 @@ describe('serverSide', function() {
 
     beforeEach(function() {
       window.$serverSide = false;
+      count = 0;
 
       fixture = $('<div>');
       $(document.body).append(fixture);
+
+      Thorax.Views.registry = Thorax.View.extend({
+        name: 'registry',
+        template: function() {
+          return 'foo ' + count++;
+        }
+      });
     });
     afterEach(function() {
       fixture.remove();
@@ -211,23 +219,54 @@ describe('serverSide', function() {
       expect(view.$el.attr('data-view-server')).to.not.exist;
     });
 
-    it('should restore on setView');
+    describe('setView', function() {
+      var layout,
+          view;
+      beforeEach(function() {
+        layout = new Thorax.LayoutView();
+        layout.render();
+
+        view = new Thorax.View({
+          name: 'winning',
+          template: function() {
+            return 'not winning';
+          }
+        });
+      });
+      it('should restore matching views', function() {
+        var $el = $('<div data-view-name="winning" data-view-server="true">winning</div>');
+        layout.$el.append($el);
+
+        layout.setView(view);
+        expect(view.$el.html()).to.equal('winning');
+        expect(layout._view).to.equal(view);
+        expect(layout.$el.children().length).to.equal(1);
+      });
+      it('should restore non-matching views', function() {
+        var $el = $('<div data-view-name="non-winning" data-view-server="true">winning</div>');
+        layout.$el.append($el);
+
+        layout.setView(view);
+        expect(view.$el.html()).to.equal('not winning');
+        expect(layout._view).to.equal(view);
+        expect(layout.$el.children().length).to.equal(1);
+      });
+      it('should restore non-server views', function() {
+        var $el = $('<div data-view-name="winning" data-view-server="false">winning</div>');
+        layout.$el.append($el);
+
+        layout.setView(view);
+        expect(view.$el.html()).to.equal('not winning');
+        expect(layout._view).to.equal(view);
+        expect(layout.$el.children().length).to.equal(1);
+      });
+    });
 
     describe('view helper', function() {
       beforeEach(function() {
         window.$serverSide = true;
-        count = 0;
       });
       describe('registry', function() {
-        beforeEach(function() {
-          Thorax.Views.registry = Thorax.View.extend({
-            name: 'registry',
-            template: function() {
-              return 'foo ' + count++;
-            }
-          });
-        });
-
         it('should rerender anonymous block', function() {
           var View = Thorax.View.extend({
             template: Handlebars.compile('{{#view}}something{{/view}}', {trackIds: true})
