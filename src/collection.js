@@ -147,6 +147,9 @@ Thorax.CollectionView = Thorax.View.extend({
       });
 
       if (model) {
+        if ($serverSide) {
+          itemElement.attr(modelIdAttributeName, model.id);
+        }
         itemElement.attr(modelCidAttributeName, model.cid);
       }
       var previousModel = index > 0 ? collection.at(index - 1) : false;
@@ -159,6 +162,9 @@ Thorax.CollectionView = Thorax.View.extend({
       }
 
       this.trigger('append', null, function(el) {
+        if ($serverSide) {
+          el.setAttribute(modelIdAttributeName, model.id);
+        }
         el.setAttribute(modelCidAttributeName, model.cid);
       });
 

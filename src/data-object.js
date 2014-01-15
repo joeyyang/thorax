@@ -36,7 +36,12 @@ function dataObject(type, spec) {
       }
 
       this.bindDataObject(type, dataObject, _.extend({}, this.options, options));
-      $el && $el.attr(spec.cidAttrName, dataObject.cid);
+      if ($el) {
+        if ($serverSide && spec.idAttrName) {
+          $el.attr(spec.idAttrName, dataObject.id);
+        }
+        $el.attr(spec.cidAttrName, dataObject.cid);
+      }
       dataObject.trigger('set', dataObject, old);
     } else {
       this[type] = false;
