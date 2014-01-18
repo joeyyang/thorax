@@ -83,6 +83,7 @@ describe('serverSide', function() {
         SomethingElse = Thorax.View.extend({
           template: function() { return 'somethingelse'; }
         }),
+        render,
         fixture,
         server,
         view;
@@ -98,14 +99,17 @@ describe('serverSide', function() {
         $(this).removeAttr('data-server-data');
       });
     }
-    function restoreView() {
+    function restoreView(shouldRender) {
       server.render();
 
       var el = server.$el.clone();
       fixture.append(el);
 
       window.$serverSide = false;
+
+      render.reset();
       view.restore(el);
+      expect(render.called).to.equal(!!shouldRender);
     }
     function compareViews() {
       cleanIds(view);
@@ -119,6 +123,8 @@ describe('serverSide', function() {
 
       fixture = $('<div>');
       $(document.body).append(fixture);
+
+      render = this.spy(Thorax.View.prototype, 'render');
 
       Thorax.Views.registry = Thorax.View.extend({
         name: 'registry',
@@ -277,7 +283,7 @@ describe('serverSide', function() {
 
           server = new View();
           view = new View();
-          restoreView();
+          restoreView(true);
 
           compareViews();
           expect(_.keys(view.children).length).to.equal(1);
@@ -447,7 +453,7 @@ describe('serverSide', function() {
             child: new SomethingElse()
           }
         });
-        restoreView();
+        restoreView(true);
 
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.parent.child);
@@ -466,7 +472,7 @@ describe('serverSide', function() {
         view = new View({
           child: new SomethingElse()
         });
-        restoreView();
+        restoreView(true);
 
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.child);
@@ -494,7 +500,7 @@ describe('serverSide', function() {
           theGoodOne: new SomethingElse(),
           child: new SomethingElse()
         });
-        restoreView();
+        restoreView(true);
 
         expect(_.keys(view.children).length).to.equal(2);
         expect(_.values(view.children)[0]).to.equal(view.theGoodOne);
@@ -540,7 +546,7 @@ describe('serverSide', function() {
         view = new View({
           child: new SomethingElse()
         });
-        restoreView();
+        restoreView(true);
 
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.child);
