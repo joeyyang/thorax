@@ -28,7 +28,11 @@ var ServerMarshall = Thorax.ServerMarshall = {
         }
       }
 
-      if (_.isObject(attributes) && !_.isString(attributeIds)) {
+      if (_.isArray(attributes) && !_.isString(attributeIds) && !attributes.toJSON) {
+        if (attributes.length) {
+          cache[name] = _.map(attributes, lut);
+        }
+      } else if (_.isObject(attributes) && !_.isString(attributeIds) && !attributes.toJSON) {
         var stored = {},
             valueSet;
         _.each(attributes, function(value, key) {
@@ -37,10 +41,6 @@ var ServerMarshall = Thorax.ServerMarshall = {
         });
         if (valueSet) {
           cache[name] = stored;
-        }
-      } else if (_.isArray(attributes) && !_.isString(attributeIds)) {
-        if (attributes.length) {
-          cache[name] = _.map(attributes, lut);
         }
       } else {
         attributeIds = {field: attributeIds};
@@ -60,14 +60,14 @@ var ServerMarshall = Thorax.ServerMarshall = {
     }
 
     cache = cache[name];
-    if (_.isObject(cache) && !cache.$lut) {
+    if (_.isArray(cache)) {
+      return _.map(cache, resolve);
+    } else if (!_.isFunction(cache) && _.isObject(cache) && !cache.$lut) {
       var ret = {};
       _.each(cache, function(value, key) {
         ret[key] = resolve(value);
       });
       return ret;
-    } else if (_.isArray(cache)) {
-      return _.map(cache, resolve);
     } else {
       return resolve(cache);
     }
