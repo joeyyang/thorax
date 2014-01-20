@@ -95,6 +95,6 @@ function lookupField(parent, context, fieldName) {
     return context;
   }
 
-  var components = fieldName.split('].[');
+  var components = fieldName.split('.');
   return lookup(context) || lookup(parent);
 }
