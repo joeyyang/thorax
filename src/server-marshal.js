@@ -1,7 +1,7 @@
 /*global $serverSide, createError */
 var _thoraxServerData = _thoraxServerData || [];
 
-var ServerMarshall = Thorax.ServerMarshall = {
+var ServerMarshal = Thorax.ServerMarshal = {
   store: function($el, name, attributes, attributeIds) {
     if ($serverSide) {
       attributeIds = attributeIds || {};

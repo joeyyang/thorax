@@ -2,7 +2,7 @@ describe('server-marshall', function() {
   var $el;
 
   beforeEach(function() {
-    Thorax.ServerMarshall._reset();
+    Thorax.ServerMarshal._reset();
     window.$serverSide = true;
 
     $el = $('<div>');
@@ -10,26 +10,26 @@ describe('server-marshall', function() {
 
   describe('store/load', function() {
     it('should create a new id if none', function() {
-      Thorax.ServerMarshall.store($el, 'name');
+      Thorax.ServerMarshal.store($el, 'name');
       expect($el.attr('data-server-data')).to.equal('0');
 
       $el = $('<div>');
-      Thorax.ServerMarshall.store($el, 'name');
+      Thorax.ServerMarshal.store($el, 'name');
       expect($el.attr('data-server-data')).to.equal('1');
     });
     it('should reuse existing ids', function() {
-      Thorax.ServerMarshall.store($el, 'name');
+      Thorax.ServerMarshal.store($el, 'name');
       expect($el.attr('data-server-data')).to.equal('0');
 
-      Thorax.ServerMarshall.store($el, 'other');
+      Thorax.ServerMarshal.store($el, 'other');
       expect($el.attr('data-server-data')).to.equal('0');
     });
 
     describe('primitive values', function() {
       it('should store constants', function() {
         ['foo', 1234, true, false, 0, '', null].forEach(function(value) {
-          Thorax.ServerMarshall.store($el, 'value', value);
-          expect(Thorax.ServerMarshall.load($el[0], 'value')).to.eql(value);
+          Thorax.ServerMarshal.store($el, 'value', value);
+          expect(Thorax.ServerMarshal.load($el[0], 'value')).to.eql(value);
         });
       });
       it('should store lookups', function() {
@@ -37,25 +37,25 @@ describe('server-marshall', function() {
           aField: {aField: true}
         };
 
-        Thorax.ServerMarshall.store($el, 'value', context.aField, 'aField');
-        expect(Thorax.ServerMarshall.load($el[0], 'value', context)).to.eql(context.aField);
-        expect(Thorax.ServerMarshall.load($el[0], 'value', undefined, context)).to.eql(context.aField);
+        Thorax.ServerMarshal.store($el, 'value', context.aField, 'aField');
+        expect(Thorax.ServerMarshal.load($el[0], 'value', context)).to.eql(context.aField);
+        expect(Thorax.ServerMarshal.load($el[0], 'value', undefined, context)).to.eql(context.aField);
       });
     });
     describe('arrays', function() {
       it('should store constant children', function() {
-        Thorax.ServerMarshall.store($el, 'array', ['foo', 1234, true, false, 0, '', null]);
-        expect(Thorax.ServerMarshall.load($el[0], 'array')).to.eql(['foo', 1234, true, false, 0, '', null]);
+        Thorax.ServerMarshal.store($el, 'array', ['foo', 1234, true, false, 0, '', null]);
+        expect(Thorax.ServerMarshal.load($el[0], 'array')).to.eql(['foo', 1234, true, false, 0, '', null]);
       });
       it('should store with lookup references', function() {
         var context = {
           aField: {aField: true}
         };
 
-        Thorax.ServerMarshall.store($el, 'array', ['foo', context.aField], [null, 'aField']);
-        expect(Thorax.ServerMarshall.load($el[0], 'array', context)).to.eql(['foo', context.aField]);
-        expect(Thorax.ServerMarshall.load($el[0], 'array', undefined, context)).to.eql(['foo', context.aField]);
-        expect(Thorax.ServerMarshall.load($el[0], 'array', {}, context)).to.eql(['foo', context.aField]);
+        Thorax.ServerMarshal.store($el, 'array', ['foo', context.aField], [null, 'aField']);
+        expect(Thorax.ServerMarshal.load($el[0], 'array', context)).to.eql(['foo', context.aField]);
+        expect(Thorax.ServerMarshal.load($el[0], 'array', undefined, context)).to.eql(['foo', context.aField]);
+        expect(Thorax.ServerMarshal.load($el[0], 'array', {}, context)).to.eql(['foo', context.aField]);
       });
       it('should throw on complex values without lookups', function() {
         var context = {
@@ -63,16 +63,16 @@ describe('server-marshall', function() {
         };
 
         expect(function() {
-          Thorax.ServerMarshall.store($el, 'array', ['foo', context.aField], [null, null]);
+          Thorax.ServerMarshal.store($el, 'array', ['foo', context.aField], [null, null]);
         }).to['throw'](/server-marshall-object/);
         expect(function() {
-          Thorax.ServerMarshall.store($el, 'array', ['foo', context.aField]);
+          Thorax.ServerMarshal.store($el, 'array', ['foo', context.aField]);
         }).to['throw'](/server-marshall-object/);
       });
     });
     describe('objects', function() {
       it('should store constant children', function() {
-        Thorax.ServerMarshall.store($el, 'obj', {
+        Thorax.ServerMarshal.store($el, 'obj', {
           thing1: 'foo',
           thing2: 1234,
           thing3: true,
@@ -81,7 +81,7 @@ describe('server-marshall', function() {
           thing6: '',
           thing7: null
         });
-        expect(Thorax.ServerMarshall.load($el[0], 'obj')).to.eql({
+        expect(Thorax.ServerMarshal.load($el[0], 'obj')).to.eql({
           thing1: 'foo',
           thing2: 1234,
           thing3: true,
@@ -96,10 +96,10 @@ describe('server-marshall', function() {
           aField: {aField: true}
         };
 
-        Thorax.ServerMarshall.store($el, 'obj', {foo: context.aField}, {foo: 'aField'});
-        expect(Thorax.ServerMarshall.load($el[0], 'obj', context)).to.eql({foo: context.aField});
-        expect(Thorax.ServerMarshall.load($el[0], 'obj', undefined, context)).to.eql({foo: context.aField});
-        expect(Thorax.ServerMarshall.load($el[0], 'obj', {}, context)).to.eql({foo: context.aField});
+        Thorax.ServerMarshal.store($el, 'obj', {foo: context.aField}, {foo: 'aField'});
+        expect(Thorax.ServerMarshal.load($el[0], 'obj', context)).to.eql({foo: context.aField});
+        expect(Thorax.ServerMarshal.load($el[0], 'obj', undefined, context)).to.eql({foo: context.aField});
+        expect(Thorax.ServerMarshal.load($el[0], 'obj', {}, context)).to.eql({foo: context.aField});
       });
       it('should throw on complex values without lookups', function() {
         var context = {
@@ -107,7 +107,7 @@ describe('server-marshall', function() {
         };
 
         expect(function() {
-          Thorax.ServerMarshall.store($el, 'obj', {'foo': context.aField}, {});
+          Thorax.ServerMarshal.store($el, 'obj', {'foo': context.aField}, {});
         }).to['throw'](/server-marshall-object/);
       });
     });
@@ -120,9 +120,9 @@ describe('server-marshall', function() {
         };
         context.aField.aField = context.aField;
 
-        Thorax.ServerMarshall.store($el, 'obj', {foo: context.aField}, {foo: 'aField'});
+        Thorax.ServerMarshal.store($el, 'obj', {foo: context.aField}, {foo: 'aField'});
 
-        expect(Thorax.ServerMarshall.serialize()).to.match(/"\$lut":"aField"/);
+        expect(Thorax.ServerMarshal.serialize()).to.match(/"\$lut":"aField"/);
     });
   });
 });
