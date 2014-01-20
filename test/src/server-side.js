@@ -276,19 +276,19 @@ describe('serverSide', function() {
         window.$serverSide = true;
       });
       describe('registry', function() {
-        it('should rerender anonymous block', function() {
+        it('should restore anonymous block', function() {
           var View = Thorax.View.extend({
             template: Handlebars.compile('{{#view}}something{{/view}}', {trackIds: true})
           });
 
           server = new View();
           view = new View();
-          restoreView(true);
+          restoreView(false);
 
           compareViews();
           expect(_.keys(view.children).length).to.equal(1);
           expect(_.values(view.children)[0].$el.html()).to.equal('something');
-          expect(view._renderCount).to.equal(2);
+          expect(view._renderCount).to.equal(1);
         });
 
         it('should restore views instantiated through the registry', function() {
@@ -460,8 +460,7 @@ describe('serverSide', function() {
         expect(view.parent.child.$el.html()).to.equal('somethingelse');
         expect(view._renderCount).to.equal(2);
       });
-      it('should rerender block view helpers', function() {
-        // TODO : Is it possible to reconstruct this if we can reconstruct the data object?
+      it('should restore block view helpers', function() {
         var View = Thorax.View.extend({
           template: Handlebars.compile('{{#view child}}something{{/view}}', {trackIds: true})
         });
@@ -472,13 +471,13 @@ describe('serverSide', function() {
         view = new View({
           child: new SomethingElse()
         });
-        restoreView(true);
+        restoreView();
 
         expect(_.keys(view.children).length).to.equal(1);
         expect(_.values(view.children)[0]).to.equal(view.child);
         expect(server.child.$el.html()).to.equal('something');
         expect(view.child.$el.html()).to.equal('something');
-        expect(view._renderCount).to.equal(2);
+        expect(view._renderCount).to.equal(1);
 
         /*
         TODO: This case might be a framework bug. Find out.
@@ -489,7 +488,10 @@ describe('serverSide', function() {
 
       it('should handle partial restore', function() {
         var View = Thorax.View.extend({
-          template: Handlebars.compile('{{view theGoodOne}}{{#view child}}something{{/view}}', {trackIds: true})
+          template: Handlebars.compile('{{view theGoodOne}}{{view (ambiguousResponse child)}}', {trackIds: true}),
+          ambiguousResponse: function(child) {
+            return child;
+          }
         });
 
         server = new View({
@@ -505,8 +507,7 @@ describe('serverSide', function() {
         expect(_.keys(view.children).length).to.equal(2);
         expect(_.values(view.children)[0]).to.equal(view.theGoodOne);
         expect(_.values(view.children)[1]).to.equal(view.child);
-        expect(server.child.$el.html()).to.equal('something');
-        expect(view.child.$el.html()).to.equal('something');
+        expect(view.child.$el.html()).to.equal('somethingelse');
         expect(view.theGoodOne.$el.html()).to.equal('foo_0');
         expect(view._renderCount).to.equal(2);
       });
