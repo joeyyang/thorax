@@ -4,8 +4,7 @@ var _fetch = Backbone.Collection.prototype.fetch,
     _replaceHTML = Thorax.View.prototype._replaceHTML,
     collectionCidAttributeName = 'data-collection-cid',
     collectionEmptyAttributeName = 'data-collection-empty',
-    collectionElementAttributeName = 'data-collection-element',
-    ELEMENT_NODE_TYPE = 1;
+    collectionElementAttributeName = 'data-collection-element';
 
 Thorax.Collection = Backbone.Collection.extend({
   model: Thorax.Model || Backbone.Model,
@@ -138,13 +137,15 @@ Thorax.CollectionView = Thorax.View.extend({
       //if the renderer's output wasn't contained in a tag, wrap it in a div
       //plain text, or a mixture of top level text nodes and element nodes
       //will get wrapped
-      if (_.isString(itemView) && !itemView.match(/^\s*</m)) {
+      if (_.isString(itemView)) {
+        if (!itemView.match(/^\s*</m)) {
+          itemView = '<div>' + itemView + '</div>';
+        }
+
+        // Double wrap so we can use children to filter to elements only
         itemView = '<div>' + itemView + '</div>';
       }
-      var itemElement = itemView.$el || $($.trim(itemView)).filter(function() {
-        //filter out top level whitespace nodes
-        return this.nodeType === ELEMENT_NODE_TYPE;
-      });
+      var itemElement = itemView.$el || $($.trim(itemView)).children();
 
       if (model) {
         if ($serverSide) {
