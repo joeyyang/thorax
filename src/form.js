@@ -173,35 +173,37 @@ _.extend(Thorax.View.prototype, {
 });
 
 // Keeping state in the views
-Thorax.View.on({
-  'before:rendered': function() {
-    // Do not store previous options if we have not rendered or if we have changed the associated
-    // model since the last render
-    if (!this._renderCount || (this.model && this.model.cid) !== this._formModelCid) {
-      return;
-    }
+if (!$serverSide) {
+  Thorax.View.on({
+    'before:rendered': function() {
+      // Do not store previous options if we have not rendered or if we have changed the associated
+      // model since the last render
+      if (!this._renderCount || (this.model && this.model.cid) !== this._formModelCid) {
+        return;
+      }
 
-    var modelOptions = this.getObjectOptions(this.model);
-    // When we have previously populated and rendered the view, reuse the user data
-    this.previousFormData = filterObject(
-      this.serialize(_.extend({ set: false, validate: false, _silent: true }, modelOptions)),
-      function(value) { return value !== '' && value != null; }
-    );
-  },
-  rendered: function() {
-    var populate = populateOptions(this);
+      var modelOptions = this.getObjectOptions(this.model);
+      // When we have previously populated and rendered the view, reuse the user data
+      this.previousFormData = filterObject(
+        this.serialize(_.extend({ set: false, validate: false, _silent: true }, modelOptions)),
+        function(value) { return value !== '' && value != null; }
+      );
+    },
+    rendered: function() {
+      var populate = populateOptions(this);
 
-    if (populate && !this._isChanging && !this._populateCount) {
-      this.populate(!populate.context && this.model.attributes, populate);
-    }
-    if (this.previousFormData) {
-      this.populate(this.previousFormData, _.extend({_silent: true}, populate));
-    }
+      if (populate && !this._isChanging && !this._populateCount) {
+        this.populate(!populate.context && this.model.attributes, populate);
+      }
+      if (this.previousFormData) {
+        this.populate(this.previousFormData, _.extend({_silent: true}, populate));
+      }
 
-    this._formModelCid = this.model && this.model.cid;
-    this.previousFormData = null;
-  }
-});
+      this._formModelCid = this.model && this.model.cid;
+      this.previousFormData = null;
+    }
+  });
+}
 
 function filterObject(object, callback) {
   _.each(object, function (value, key) {
