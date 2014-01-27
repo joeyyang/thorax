@@ -30,7 +30,21 @@ describe('serverSide', function() {
       layout.setView(view);
       expect(emit).to.not.have.been.called;
     });
-    it('should emit after timeout');
+    it('should emit after ajax for flagged views', function() {
+      var view = new Thorax.View({template: function() { return 'bar'; }}),
+          layout = new Thorax.LayoutView();
+
+      layout.setView(view, {serverRender: 'ajax'});
+      expect(emit).to.have.been.calledWith('ajax');
+      emit.reset();
+
+      view = new Thorax.View({
+        serverRender: 'ajax',
+        template: function() { return 'bar'; }
+      });
+      layout.setView(view);
+      expect(emit).to.have.been.calledWith('ajax');
+    });
   });
 
   describe('events', function() {

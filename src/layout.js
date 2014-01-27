@@ -20,8 +20,13 @@ Thorax.LayoutView = Thorax.View.extend({
     }, options || {});
 
     // Emit only data for non-server rendered views
-    if ($serverSide && !options.serverRender && !view.serverRender) {
-      return emit();
+    var serverRender = options.serverRender || view.serverRender;
+    if ($serverSide) {
+      if (serverRender === 'ajax') {
+        emit(serverRender);
+      } else if (!serverRender) {
+        return emit();
+      }
     }
 
     if (_.isString(view)) {
