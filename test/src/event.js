@@ -497,24 +497,17 @@ describe('event', function() {
       });
     });
     describe('dom events', function() {
-      beforeEach(function() {
-        this.stub(view.$el, 'on', function(event, selector, callback) {
-          if (selector === 'foo') {
-            callback($.Event('click'));
-          }
-        });
-        this.stub($.fn, 'view', function() { return view; });
-      });
-
       it('should use view', function() {
-        view.on('click foo', spy);
+        view.on('click', spy);
         view.delegateEvents();
+        view.$el.trigger('click');
         expect(spy).to.have.been.calledOnce
             .to.be.always.calledOn(view);
       });
       it('should pass context', function() {
-        view.on('click foo', spy, context);
+        view.on('click', spy, context);
         view.delegateEvents();
+        view.$el.trigger('click');
         expect(spy).to.have.been.calledOnce
             .to.be.always.calledOn(context);
       });

@@ -60,13 +60,19 @@ _.extend(Thorax.View.prototype, {
       //accept on("click a", callback, context)
       _.each((_.isArray(callback) ? callback : [callback]), function(callback) {
         var params = eventParamsFromEventItem.call(this, eventName, callback, context || this);
-        if (params.type === 'DOM' && !this._eventsDelegated) {
+        if (params.type === 'DOM') {
+          // Avoid overhead of handling DOM events on the server
+          if ($serverSide) {
+            return;
+          }
+
           //will call _addEvent during delegateEvents()
           if (!this._eventsToDelegate) {
             this._eventsToDelegate = [];
           }
           this._eventsToDelegate.push(params);
-        } else {
+        }
+        if (params.type !== 'DOM' || this._eventsDelegated) {
           this._addEvent(params);
         }
       }, this);
@@ -82,7 +88,7 @@ _.extend(Thorax.View.prototype, {
       this._eventsToDelegate = [];
       this.on(events);
     }
-    this._eventsToDelegate && _.each(this._eventsToDelegate, this._addEvent, this);
+    _.each(this._eventsToDelegate, this._addEvent, this);
     this._eventsDelegated = true;
   },
   //params may contain:
@@ -97,6 +103,11 @@ _.extend(Thorax.View.prototype, {
       return _on.call(this, params.name, params.handler, params.context || this);
     }
 
+    // Shortcircuit DOM events on the server
+    if ($serverSide && params.type !== 'view') {
+      return;
+    }
+
     var boundHandler = bindEventHandler.call(this, params.type + '-event:', params);
 
     if (params.type === 'view') {
@@ -107,7 +118,7 @@ _.extend(Thorax.View.prototype, {
       } else {
         _on.call(this, params.name, boundHandler, params.context || this);
       }
-    } else if (!$serverSide) {
+    } else {
       // DOM Events
       if (!params.nested) {
         boundHandler = containHandlerToCurentView(boundHandler, this);
